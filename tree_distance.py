@@ -53,6 +53,7 @@ def main(argv):
 	# first create a dictionary
 	nearby_leaves = {}
 	nearby_leaves_nr = {}
+	notfound = []
 	
 	with open(listfile) as file:
 		for line in file:
@@ -60,19 +61,23 @@ def main(argv):
 			#set the distance counter to zero
 			distance = float(0)
 			#jump to that taxon in the tree
-			target = t&indicator
-			#see who is the parent of the taxon in question
-			nearby_leaves [indicator]=[]
-			for leaf in t:
-				distance = target.get_distance(leaf)
-				if distance <= threshold:
-					nearby_leaves[indicator].append(leaf.name)
-	
+			try:
+				target = t&indicator
+				print ('Looking at taxon : %s' % target) 
+				#see who is the parent of the taxon in question
+				nearby_leaves [indicator]=[]
+				for leaf in t:
+					distance = target.get_distance(leaf)
+					if distance <= threshold:
+						nearby_leaves[indicator].append(leaf.name)
+			except:
+				print ("Not found : %s" % target)
+				notfound.extend(indicator) 
+			
 	# remove taxa hits that are present in the taxa list file 
 	nearby_leaves_nr = nearby_leaves
 	with open(listfile) as file:
 		for line in file:
-			print (line)
 			for key,value in nearby_leaves_nr.items():
 				for v in value:
 					if v == line.strip():
@@ -91,6 +96,13 @@ def main(argv):
 		w = csv.writer(open('taxa-output-nr.csv', "w"))
 		for key, val in nearby_leaves_nr.items():
 			w.writerow([key, val])     
+	csv_file.close()
+	
+	#write the output-nr file
+	with open('taxa-notfound.csv', 'wb') as csv_file:
+		w = csv.writer(open('taxa-notfound.csv', "w"))
+		for key in notfound:
+			w.writerow(key)     
 	csv_file.close()
 	
 #start the main body of the script
