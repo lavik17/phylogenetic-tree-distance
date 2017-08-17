@@ -1,6 +1,6 @@
 # phylogenetic-tree-distance
 
-Returns all leaves that are at an X distance from a list of other leaves
+Returns all leaves that are at an X distance from a list taxa provided by the user
 
 The script takes a newick tree, list of taxa, and a uses a hardcoded distance of 0.05 
 
