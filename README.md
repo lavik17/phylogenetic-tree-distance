@@ -4,7 +4,7 @@ Returns all leaves that are at an X distance from a list taxa provided by the us
 
 The script takes a newick tree, list of taxa, and a uses a hardcoded distance of 0.05 
 
-The output is taxa-output.csv and taxa-output-nr.csv
+The output is taxa-output.csv, taxa-output-nr.csv, taxa-notfound.csv
 
 Syntax:
 
