@@ -52,7 +52,8 @@ def main(argv):
 	# read in list of taxa into a dictionary
 	# first create a dictionary
 	nearby_leaves = {}
-
+	nearby_leaves_nr = {}
+	
 	with open(listfile) as file:
 		for line in file:
 			indicator = line.strip()
@@ -66,9 +67,18 @@ def main(argv):
 				distance = target.get_distance(leaf)
 				if distance <= threshold:
 					nearby_leaves[indicator].append(leaf.name)
-				
-			
-				
+	
+	# remove taxa hits that are present in the taxa list file 
+	nearby_leaves_nr = nearby_leaves
+	with open(listfile) as file:
+		for line in file:
+			print (line)
+			for key,value in nearby_leaves_nr.items():
+				for v in value:
+					if v == line.strip():
+						value.remove(v)
+					
+						
 	#write the output file
 	with open('taxa-output.csv', 'wb') as csv_file:
 		w = csv.writer(open('taxa-output.csv', "w"))
@@ -76,6 +86,13 @@ def main(argv):
 			w.writerow([key, val])     
 	csv_file.close()
 
+	#write the output-nr file
+	with open('taxa-output-nr.csv', 'wb') as csv_file:
+		w = csv.writer(open('taxa-output-nr.csv', "w"))
+		for key, val in nearby_leaves_nr.items():
+			w.writerow([key, val])     
+	csv_file.close()
+	
 #start the main body of the script
 #get the arguments
 if __name__ == "__main__":
