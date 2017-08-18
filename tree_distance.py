@@ -53,14 +53,16 @@ def main(argv):
 	# first create a dictionary
 	nearby_leaves = {}
 	nearby_leaves_nr = {}
-	notfound = []
+	notfound_leaves = {}
 	
+				
 	with open(listfile) as file:
 		for line in file:
 			indicator = line.strip()
 			#set the distance counter to zero
 			distance = float(0)
 			#jump to that taxon in the tree
+			notfound_leaves [indicator]=[]
 			try:
 				target = t&indicator
 				print ('Looking at taxon : %s' % target) 
@@ -69,11 +71,11 @@ def main(argv):
 				for leaf in t:
 					distance = target.get_distance(leaf)
 					if distance <= threshold:
-						nearby_leaves[indicator].append(leaf.name)
+						nearby_leaves [indicator].append(leaf.name)
 			except:
-				print ("Not found : %s" % target)
-				notfound.extend(indicator) 
-			
+				notfound_leaves [indicator].append('Not found in tree') 
+				print ('Not found : %s' % indicator)			
+				
 	# remove taxa hits that are present in the taxa list file 
 	nearby_leaves_nr = nearby_leaves
 	with open(listfile) as file:
@@ -82,15 +84,20 @@ def main(argv):
 				for v in value:
 					if v == line.strip():
 						value.remove(v)
-					
-						
+	print()
+	print()
+	print ('Done searching')					
+	print()
+	
 	#write the output file
+	print ('Writing taxa-output.csv')
 	with open('taxa-output.csv', 'wb') as csv_file:
 		w = csv.writer(open('taxa-output.csv', "w"))
 		for key, val in nearby_leaves.items():
 			w.writerow([key, val])     
 	csv_file.close()
 
+	print('writing taxa-output-nr.csv')
 	#write the output-nr file
 	with open('taxa-output-nr.csv', 'wb') as csv_file:
 		w = csv.writer(open('taxa-output-nr.csv', "w"))
@@ -98,13 +105,16 @@ def main(argv):
 			w.writerow([key, val])     
 	csv_file.close()
 	
+	print('Writing taxa-notfound.csv')
 	#write the output-nr file
 	with open('taxa-notfound.csv', 'wb') as csv_file:
 		w = csv.writer(open('taxa-notfound.csv', "w"))
-		for key in notfound:
-			w.writerow(key)     
+		for key, val in notfound_leaves.items():
+			w.writerow([key, val])     
 	csv_file.close()
 	
+	print()
+	print('All done!')
 #start the main body of the script
 #get the arguments
 if __name__ == "__main__":
