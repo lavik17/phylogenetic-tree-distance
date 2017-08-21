@@ -1,55 +1,41 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
+# Version 2.0
+# This script takes a Newick formatted tree and a list of taxa of interest.
+# The user can supply a distance threshold (default is 0.05)
+# The script will search for all taxa within a distance smaller than the threshold
+# Three files will be created:
+# 1. List of all matches
+# 2. List of matches without taxa that are found in the user provided list
+# 3. List of taxa that were missing from the tree
 
 # Needs the following files:
 # tree.nwk - Newick formatted tree file
 # taxa-list.txt - List of taxa to check
 
 
-import sys, getopt, csv, subprocess
+import sys
+import csv
+import argparse
 from ete3 import Tree
 from collections import defaultdict
 
 #get the arguments from the user
-def userhelp():
-	print('\n\n\nThe script takes a newick tree, list of taxa, and a uses a set distance of 0.5')
-	print('The output is taxa-output.csv')
-	print('\nSyntax: tree-distance.py -t <tree.nwk> -l <list.txt>')
-	print('\n-t Newick tree file')
-	print('-l List of taxa of interest, each taxon in a new line')
+def main(**kwargs):
 	
-#get the arguments from the user
-def main(argv):
-	tree_file = ''
-	list_file = ''
-	try:
-		opts, args = getopt.getopt(argv,'ht:l:s',['help','tree','list'])
-	except getopt.GetoptError:
-		userhelp()
-		sys.exit(2)
-	for opt, arg in opts:
-		if opt in ('-h', '--help'):
-			userhelp()
-			sys.exit()
-		elif opt in ('-t', '--tree'):
-			tree_file = arg
-		elif opt in ('-l', '--list'):
-			list_file = arg
-		else:
-			userhelp()
-			sys.exit(2)
-
-	#Set a distance threshold value
-	threshold = 0.1
-	listfile = list_file
+	tree_file=kwargs["tree"]
+	listfile=kwargs["list"]
+	threshold=kwargs["value"]
+	
+	print('\n\nStarting search for taxa with distance of up to %f' % threshold)
 	# read in newick tree
 	t = Tree(tree_file)
 
 	# read in list of taxa into a dictionary
 	# first create a dictionary
-	nearby_leaves = = defaultdict(list)
-	nearby_leaves_nr = = {}
-	notfound_leaves = = defaultdict(list)
+	nearby_leaves = defaultdict(list)
+	nearby_leaves_nr = {}
+	notfound_leaves = defaultdict(list)
 	
 				
 	with open(listfile) as file:
@@ -110,4 +96,9 @@ def main(argv):
 #start the main body of the script
 #get the arguments
 if __name__ == "__main__":
-    main(sys.argv[1:])
+	parser = argparse.ArgumentParser(description="Picks all taxa that are at X distance from list of other taxa")
+	parser.add_argument("-t", "--tree", type=str, required=True, help="Newick tree file")
+	parser.add_argument("-l", "--list", type=str, required=True, help="List of taxa to search")
+	parser.add_argument("-v", "--value", nargs="?", const="0.05", type=float, required=False, help="Distance threshold as fraction. Default is 0.05")
+	args = parser.parse_args() 
+	main(tree=args.tree, list=args.list, value=args.value)
