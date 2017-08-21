@@ -8,19 +8,15 @@
 
 import sys, getopt, csv, subprocess
 from ete3 import Tree
+from collections import defaultdict
 
 #get the arguments from the user
 def userhelp():
-	print ()
-	print ()
-	print ()
-	print ('The script takes a newick tree, list of taxa, and a uses a set distance of 0.5')
-	print ('The output is taxa-output.csv')
-	print ()
-	print ('Syntax: tree-distance.py -t <tree.nwk> -l <list.txt>')
-	print ()
-	print ('-t Newick tree file')
-	print ('-l List of taxa of interest, each taxon in a new line')
+	print('\n\n\nThe script takes a newick tree, list of taxa, and a uses a set distance of 0.5')
+	print('The output is taxa-output.csv')
+	print('\nSyntax: tree-distance.py -t <tree.nwk> -l <list.txt>')
+	print('\n-t Newick tree file')
+	print('-l List of taxa of interest, each taxon in a new line')
 	
 #get the arguments from the user
 def main(argv):
@@ -44,16 +40,16 @@ def main(argv):
 			sys.exit(2)
 
 	#Set a distance threshold value
-	threshold = 0.05
+	threshold = 0.1
 	listfile = list_file
 	# read in newick tree
 	t = Tree(tree_file)
 
 	# read in list of taxa into a dictionary
 	# first create a dictionary
-	nearby_leaves = {}
-	nearby_leaves_nr = {}
-	notfound_leaves = {}
+	nearby_leaves = = defaultdict(list)
+	nearby_leaves_nr = = {}
+	notfound_leaves = = defaultdict(list)
 	
 				
 	with open(listfile) as file:
@@ -62,19 +58,18 @@ def main(argv):
 			#set the distance counter to zero
 			distance = float(0)
 			#jump to that taxon in the tree
-			notfound_leaves [indicator]=[]
 			try:
-				target = t&indicator
-				print ('Looking at taxon : %s' % target) 
+				# 'target = t&indicator' This is a shortcut that can replace the following line:
+				target = t.search_nodes(name=indicator)[0]
+				print('Looking at taxon : %s' % target) 
 				#see who is the parent of the taxon in question
-				nearby_leaves [indicator]=[]
 				for leaf in t:
 					distance = target.get_distance(leaf)
 					if distance <= threshold:
 						nearby_leaves [indicator].append(leaf.name)
 			except:
 				notfound_leaves [indicator].append('Not found in tree') 
-				print ('Not found : %s' % indicator)			
+				print('Not found : %s' % indicator)			
 				
 	# remove taxa hits that are present in the taxa list file 
 	nearby_leaves_nr = nearby_leaves
@@ -84,13 +79,11 @@ def main(argv):
 				for v in value:
 					if v == line.strip():
 						value.remove(v)
-	print()
-	print()
-	print ('Done searching')					
-	print()
+						
+	print('\n\nDone searching\n')					
 	
 	#write the output file
-	print ('Writing taxa-output.csv')
+	print('Writing taxa-output.csv')
 	with open('taxa-output.csv', 'wb') as csv_file:
 		w = csv.writer(open('taxa-output.csv', "w"))
 		for key, val in nearby_leaves.items():
@@ -113,8 +106,7 @@ def main(argv):
 			w.writerow([key, val])     
 	csv_file.close()
 	
-	print()
-	print('All done!')
+	print('\nAll done!')
 #start the main body of the script
 #get the arguments
 if __name__ == "__main__":
