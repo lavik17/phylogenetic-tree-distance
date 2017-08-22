@@ -52,9 +52,9 @@ def main(**kwargs):
 				for leaf in t:
 					distance = target.get_distance(leaf)
 					if distance <= threshold:
-						nearby_leaves [indicator].append(leaf.name)
+						nearby_leaves[indicator].append(leaf.name)
 			except:
-				notfound_leaves [indicator].append('Not found in tree') 
+				notfound_leaves[indicator].append('Not found in tree') 
 				print('Not found : %s' % indicator)			
 				
 	# remove taxa hits that are present in the taxa list file 
